@@ -30,8 +30,9 @@ Hieronder zie je hoe de Persoonlijke Mappenstructuur Generator en de alternatiev
   - 👉 [Download de laatste versie (.exe) via Releases](https://github.com/RemseyMailjard/PersoonlijkeMappenGenerator/releases)
 
 - **.BAT Script (Voor gevorderden)**
-  - Zelf aanpasbaar, zie de broncode.
-  - 👉 [Bekijk de .bat script-versie in de repository](https://github.com/RemseyMailjard/PersoonlijkeMappenGenerator/blob/main/PersoonlijkeMappenStructuurGenerator.bat)
+  - Biedt flexibiliteit en kan worden aangepast. Voor de meest uitgebreide aanpasbaarheid via `map_structuur.txt`, zorg dat je een versie van het script gebruikt die dit ondersteunt (zoals de functionaliteit beschreven voor de .EXE, of het `test2.bat` script in de repository).
+  - 👉 [Download het .bat script (PersoonlijkeMappenStructuurGenerator.bat)](https://github.com/RemseyMailjard/PersoonlijkeMappenGenerator/blob/main/PersoonlijkeMappenStructuurGenerator.bat)
+  - ℹ️ *Indien je de `map_structuur.txt` wilt gebruiken met een .BAT script, controleer of het script deze functionaliteit heeft. Het `test2.bat` script in de repository demonstreert deze geavanceerde werking.*
 
 - **AI File Organizer (Pro, API-key vereist)**
   - Laat bestanden sorteren, hernoemen en classificeren met AI.
@@ -49,7 +50,7 @@ Hieronder zie je hoe de Persoonlijke Mappenstructuur Generator en de alternatiev
 ## 📁 Wat doet deze tool?
 
 - Vraagt naar een **hoofdlocatie** (standaard: `Desktop\Persoonlijke Administratie`) en een **doeljaar**.
-- Gebruikt een flexibel `map_structuur.txt` bestand om jouw eigen mappenstructuur te bepalen (zie onderaan).
+- De `.exe`-versie en sommige `.bat`-versies (zoals `test2.bat` in deze repository) gebruiken een flexibel `map_structuur.txt` bestand om jouw eigen mappenstructuur te bepalen (zie onderaan).
 - Maakt een thematisch complete folderstructuur voor administratie, o.a.:
     - Financiën
     - Belastingen
@@ -58,7 +59,7 @@ Hieronder zie je hoe de Persoonlijke Mappenstructuur Generator en de alternatiev
     - Gezondheid
     - ...en meer!
 - Plaatst submappen per jaartal voor eenvoudig archiveren.
-- Logt alle acties zodat je altijd ziet wat er is aangemaakt.
+- Logt alle acties in een logbestand (`%TEMP%\PersoonlijkeMappenStructuurGenerator_log.txt`) zodat je altijd ziet wat er is aangemaakt.
 
 ---
 
@@ -87,10 +88,25 @@ Hieronder zie je hoe de Persoonlijke Mappenstructuur Generator en de alternatiev
 
 ## 🧑‍💻 Gebruik (.BAT Script Versie)
 
-1. Download `PersoonlijkeMappenStructuurGenerator.bat` (en eventueel het voorbeeldstructuur-bestand).
-2. Pas desgewenst de structuur aan in `map_structuur.txt`.
-3. Dubbelklik op het `.bat` bestand of start via de command prompt.
-4. Volg de instructies.
+1. Download een `.bat` script, bijvoorbeeld `PersoonlijkeMappenStructuurGenerator.bat`. Je vindt ook `map_structuur.txt` in de repository.
+2. **Om `map_structuur.txt` te gebruiken (aanbevolen voor volledige flexibiliteit):**
+    a. Zorg ervoor dat het `.bat` script dat je gebruikt `map_structuur.txt` ondersteunt. De `.exe`-versie doet dit, en het `test2.bat`-script in deze repository is een voorbeeld van een `.bat` script met deze functionaliteit.
+    b. Plaats het `.bat` script en `map_structuur.txt` in dezelfde map.
+    c. Pas de gewenste folderstructuur aan in `map_structuur.txt`.
+3. **Indien het gebruikte `.bat` script `map_structuur.txt` niet ondersteunt, of als je `map_structuur.txt` niet in dezelfde map plaatst:**
+    - Het script zal een ingebouwde (mogelijk beperktere) mappenstructuur aanmaken.
+4. Dubbelklik op het `.bat` bestand of start het via de command prompt.
+5. Volg de instructies. De gemaakte mappen en eventuele meldingen worden gelogd in `%TEMP%\PersoonlijkeMappenStructuurGenerator_log.txt`.
+
+---
+
+## 📦 Bestanden in deze Repository
+
+- **`README.md`**: Dit informatiedocument.
+- **`map_structuur.txt`**: Het sjabloonbestand dat je kunt aanpassen om je eigen mappenstructuur te definiëren. Wordt gebruikt door de `.exe`-versie en door scripts die deze functionaliteit implementeren (zie `test2.bat` voor een voorbeeldimplementatie).
+- **`PersoonlijkeMappenStructuurGenerator.bat`**: Het primaire batch-script. Afhankelijk van de versie/update-status, kan de ondersteuning voor `map_structuur.txt` variëren.
+- **`test2.bat`**: Een alternatief/ontwikkel batch-script dat uitgebreide ondersteuning voor `map_structuur.txt` demonstreert en een fallback naar een interne structuur heeft.
+- **`Persoonlijke Administratie.zip`**: Een .zip-bestand, mogelijk met een voorbeeld van een gegenereerde structuur of een oudere distributie. Voor de laatste `.exe`-versie, zie de [Releases sectie](https://github.com/RemseyMailjard/PersoonlijkeMappenGenerator/releases).
 
 ---
 
