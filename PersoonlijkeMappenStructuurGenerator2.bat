@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 rem ================================================================================
 rem  PersoonlijkeMappenStructuurGenerator.bat
-rem  Versie: 1.7.1 (Stabiliteitsverbeteringen in externe structuurverwerking)
+rem  Versie: 1.7.2 (Stabiliteitsverbeteringen, CR-strip loop verwijderd)
 rem  Maakt een persoonlijke mappenstructuur aan.
 rem  Gebruikt map_structuur.txt indien aanwezig, anders een standaard ingebouwde structuur.
 rem  Gemaakt door Remsey Mailjard (https://nl.linkedin.com/in/remseymailjard)
@@ -18,7 +18,7 @@ echo ===============================
 echo.
 
 :: Initialisatie
-set "SCRIPT_VERSION=1.7.1"
+set "SCRIPT_VERSION=1.7.2"
 set "LOGFILE=%TEMP%\PersoonlijkeMappenStructuurGenerator_log.txt"
 set "MAP_DEFINITION_FILE=%~dp0map_structuur.txt"
 set "SCRIPT_SUCCESSFUL=true"
@@ -126,36 +126,40 @@ if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :logMessage "Verwerken van mappenstructuur uit !MAP_DEFINITION_FILE!..."
     for /f "usebackq delims=" %%L in ("!MAP_DEFINITION_FILE!") do (
         set "LINE=%%L"
-        set "PROCESSED_LINE="
-
-        rem Verwijder eventuele CR aan het einde van de regel (robuuster)
-        for /f "delims=" %%C in ("!LINE!") do set "LINE=%%C"
         
-        rem Trim eventuele leidende/volgende spaties van de gelezen regel
+        rem DEBUG: Toon de origineel gelezen regel
+        rem echo RAW LINE: [!LINE!]
+        rem pause
+
+        rem Trim leidende/volgende spaties van de gelezen regel
         call :trim LINE
 
-        rem Skip lege regels (na trimmen)
+        rem Skip lege regels na trimmen
         if not defined LINE (goto :continueLoop)
         if "!LINE!"=="" (goto :continueLoop)
 
         rem Skip commentaarregels (#)
-        set "FIRST_CHAR=!LINE:~0,1!"
-        if "!FIRST_CHAR!"=="#" (goto :continueLoop)
+        if "!LINE:~0,1!"=="#" (goto :continueLoop)
 
         rem Skip commentaarregels (rem - case insensitief)
         if /i "!LINE:~0,3!"=="rem" (
-            if "!LINE:~3,1!"=="" (goto :continueLoop) rem Alleen "rem"
-            if "!LINE:~3,1!"==" " (goto :continueLoop) rem "rem " gevolgd door spatie
+            rem Controleer of het "rem" is gevolgd door een spatie of niets, anders geen commentaar
+            set "CHECK_REM_SUFFIX=!LINE:~3!"
+            if not defined CHECK_REM_SUFFIX (goto :continueLoop) rem Alleen "rem"
+            if "!CHECK_REM_SUFFIX:~0,1!"==" " (goto :continueLoop) rem "rem " gevolgd door spatie
+            if "!CHECK_REM_SUFFIX!"=="" (goto :continueLoop) rem Alleen "rem" (redundant met not defined, maar safe)
         )
+        
+        rem DEBUG: Toon de regel die daadwerkelijk verwerkt gaat worden na commentaarchecks
+        rem echo PROCESSING LINE: [!LINE!]
+        rem pause
 
-        rem Vervang placeholders
-        set "PROCESSED_LINE=!LINE:!TARGET_YEAR!=%TARGET_YEAR%!"
+        set "PROCESSED_LINE=!LINE!"
+        set "PROCESSED_LINE=!PROCESSED_LINE:!TARGET_YEAR!=%TARGET_YEAR%!"
         set "PROCESSED_LINE=!PROCESSED_LINE:!PREVIOUS_YEAR!=%PREVIOUS_YEAR%!"
-
-        rem Vervang forward slashes met backslashes voor Windows paden
         set "PROCESSED_LINE=!PROCESSED_LINE:/=\!"
 
-        rem Verwijder eventuele leidende of volgende backslashes als de regel leeg was na placeholder vervanging
+        rem Verwijder eventuele leidende of volgende backslashes (als de regel alleen uit placeholders bestond die leeg werden)
         if defined PROCESSED_LINE (
             if "!PROCESSED_LINE:~0,1!"=="\" set "PROCESSED_LINE=!PROCESSED_LINE:~1!"
             if defined PROCESSED_LINE (
@@ -167,6 +171,8 @@ if "!USE_EXTERNAL_MAP_FILE!"=="true" (
         if defined PROCESSED_LINE (
             if not "!PROCESSED_LINE!"=="" (
                 set "FULL_PATH=!ROOT!\!PROCESSED_LINE!"
+                rem echo CREATING: [!FULL_PATH!]
+                rem pause
                 call :createSingleDir "!FULL_PATH!"
             )
         )
