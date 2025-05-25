@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 rem ================================================================================
 rem  PersoonlijkeMappenStructuurGenerator.bat
-rem  Versie: 1.8 (Fix: PREVIOUS_YEAR altijd correct en robuuste expansie)
+rem  Versie: 2.1 - ALTIJD correcte jaarvervanging + volledige categorieën fallback
 rem  Gemaakt door Remsey Mailjard (https://nl.linkedin.com/in/remseymailjard)
 rem ================================================================================
 
@@ -16,7 +16,7 @@ echo ===============================
 echo.
 
 :: Initialisatie
-set "SCRIPT_VERSION=1.8"
+set "SCRIPT_VERSION=2.1"
 set "LOGFILE=%TEMP%\PersoonlijkeMappenStructuurGenerator_log.txt"
 set "MAP_DEFINITION_FILE=%~dp0map_structuur.txt"
 set "SCRIPT_SUCCESSFUL=true"
@@ -29,7 +29,7 @@ set "USE_EXTERNAL_MAP_FILE=false"
 echo. > "%LOGFILE%"
 call :logMessage "Script gestart (v%SCRIPT_VERSION%)."
 
-:: Controleer of het optionele map definitie bestand bestaat
+:: Controle op externe structuur
 if exist "!MAP_DEFINITION_FILE!" (
     set "USE_EXTERNAL_MAP_FILE=true"
     call :logMessage "Mappen definitiebestand gevonden: !MAP_DEFINITION_FILE!. Deze zal worden gebruikt."
@@ -53,53 +53,43 @@ set /p "ROOT=Wil je een andere locatie? (laat leeg voor standaard): "
 if "!ROOT!"=="" set "ROOT=%DEFAULT_ROOT%"
 if "!ROOT:~-1!"=="\" set "ROOT=!ROOT:~0,-1!"
 
-:: Huidig jaar berekenen en standaard doeljaar instellen
+:: Huidig jaar & vorig jaar bepalen
 for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set "datetime=%%I"
 set "CURRENT_YEAR=%datetime:~0,4%"
 set "TARGET_YEAR=!CURRENT_YEAR!"
 set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-call :logMessage "Standaard doeljaar ingesteld op huidig jaar: !CURRENT_YEAR!, vorig jaar (voor archief): !PREVIOUS_YEAR!"
 
-:: Vraag gebruiker naar doeljaar met numerieke validatie
+:: Input van gebruiker: jaar
 echo.
 set "INPUT_YEAR="
 set /p "INPUT_YEAR=Voor welk jaar moeten de mappen worden aangemaakt? (standaard: !CURRENT_YEAR!): "
 
+:: Validatie en herberekening previous year
 if "!INPUT_YEAR!"=="" (
-    call :logMessage "Geen jaartal ingevoerd. Standaard (!CURRENT_YEAR!) wordt gebruikt."
     set "TARGET_YEAR=!CURRENT_YEAR!"
     set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-    goto AfterYearValidation
+) else (
+    set /a TEST_YEAR=0 2>nul
+    set /a TEST_YEAR=!INPUT_YEAR! 2>nul
+    if errorlevel 1 (
+        set "TARGET_YEAR=!CURRENT_YEAR!"
+        set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
+    ) else if !TEST_YEAR! lss 1000 (
+        set "TARGET_YEAR=!CURRENT_YEAR!"
+        set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
+    ) else if !TEST_YEAR! gtr 9999 (
+        set "TARGET_YEAR=!CURRENT_YEAR!"
+        set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
+    ) else (
+        set "TARGET_YEAR=!TEST_YEAR!"
+        set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
+    )
 )
 
-set /a TEST_YEAR=0 2>nul
-set /a TEST_YEAR=!INPUT_YEAR! 2>nul
-if errorlevel 1 (
-    call :logMessage "Ongeldige invoer voor jaartal (niet numeriek): '!INPUT_YEAR!'."
-    set "TARGET_YEAR=!CURRENT_YEAR!"
-    set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-    goto AfterYearValidation
-)
+echo [DEBUG] TARGET_YEAR=!TARGET_YEAR!  PREVIOUS_YEAR=!PREVIOUS_YEAR!
+call :logMessage "In gebruik: TARGET_YEAR=!TARGET_YEAR!, PREVIOUS_YEAR=!PREVIOUS_YEAR!"
 
-if !TEST_YEAR! lss 1000 (
-    call :logMessage "Ingevoerd jaartal '!INPUT_YEAR!' (!TEST_YEAR!) is te klein (minder dan 1000)."
-    set "TARGET_YEAR=!CURRENT_YEAR!"
-    set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-    goto AfterYearValidation
-)
-if !TEST_YEAR! gtr 9999 (
-    call :logMessage "Ingevoerd jaartal '!INPUT_YEAR!' (!TEST_YEAR!) is te groot (meer dan 9999)."
-    set "TARGET_YEAR=!CURRENT_YEAR!"
-    set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-    goto AfterYearValidation
-)
-
-set "TARGET_YEAR=!TEST_YEAR!"
-set /a PREVIOUS_YEAR=!TARGET_YEAR!-1
-call :logMessage "Doeljaar door gebruiker ingesteld: !TARGET_YEAR!, vorig jaar (voor archief): !PREVIOUS_YEAR!"
-
-:AfterYearValidation
-:: Overzicht en bevestiging
+:: Overzicht & bevestiging
 echo.
 echo =============================================================
 echo Mappenstructuur wordt aangemaakt in:
@@ -110,8 +100,7 @@ echo =============================================================
 echo Druk op Enter om te starten, of sluit dit venster om te annuleren.
 pause
 
-:: Begin mappen aanmaken
-call :logMessage "Start mapcreatie: Locatie=!ROOT!, Jaar=!TARGET_YEAR!, Vorig Jaar=!PREVIOUS_YEAR!."
+:: Hoofdmap aanmaken
 call :createSingleDir "!ROOT!"
 if not exist "!ROOT!" (
     echo [FOUT] Kan hoofdmap niet aanmaken: "!ROOT!"
@@ -120,13 +109,12 @@ if not exist "!ROOT!" (
     goto EndScriptProcessing
 )
 
-:: KIES WELKE STRUCTUUR TE GEBRUIKEN
+:: ----------- STRUCTUUR OPBOUW -----------
 if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :logMessage "Verwerken van mappenstructuur uit !MAP_DEFINITION_FILE!..."
     for /f "usebackq delims=" %%L in ("!MAP_DEFINITION_FILE!") do (
         set "LINE=%%L"
         call :trim LINE
-
         set "SKIP_LINE="
         if not defined LINE set "SKIP_LINE=1"
         if "!LINE!"=="" set "SKIP_LINE=1"
@@ -159,7 +147,8 @@ if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :logMessage "Verwerking van !MAP_DEFINITION_FILE! voltooid."
 ) else (
     call :logMessage "Gebruik van standaard ingebouwde mappenstructuur..."
-    rem -- VERVANG ALLE !TARGET_YEAR! en !PREVIOUS_YEAR! OOK HIER --
+    rem ---- ALLE CATEGORIEËN, altijd met !TARGET_YEAR! en !PREVIOUS_YEAR! ----
+
     call :createSingleDir "!ROOT!\1. Financien"
     call :createSingleDir "!ROOT!\1. Financien\Bankafschriften"
     call :createSingleDir "!ROOT!\1. Financien\Bankafschriften\!TARGET_YEAR!"
@@ -348,12 +337,10 @@ if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :createSingleDir "!ROOT!\20. Huisdieren\Verzekeringsdocumenten Huisdier"
     call :createSingleDir "!ROOT!\20. Huisdieren\Aankoop- of Adoptiepapieren"
 
-    call :createSingleDir "!ROOT!\99. Archief"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!\Afgeronde Projecten"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!\Oude Financiele Documenten"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!\Overige Gearchiveerde Items"
-    call :logMessage "Standaard ingebouwde mappenstructuur voltooid."
 )
 
 :EndScriptProcessing
@@ -410,7 +397,6 @@ goto :eof
 
 :trim
 rem Subroutine om leidende en volgende spaties van een variabele te verwijderen
-rem Gebruik: call :trim VARIABELENAAM
 setlocal
 set "value=!%1!"
 :trimLoopLead
