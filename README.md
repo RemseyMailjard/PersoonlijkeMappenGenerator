@@ -83,6 +83,20 @@ Dit biedt een geavanceerde oplossing voor het daadwerkelijk organiseren van de *
 *   Personen die een startpunt zoeken voor een goede mappenopzet voor thuisadministratie.
 *   Trainers en coaches die digitale vaardigheden aanleren en een praktisch voorbeeld willen geven.
 
+## 📂 Alternatief: AI File Organizer (GPT)
+
+Naast het batchscript heb ik ook een **File Organizer GPT** ontwikkeld.  
+Met deze slimme AI-assistent organiseer je via een interactieve chat eenvoudig je persoonlijke mappenstructuur, geheel op maat en zonder technische kennis.
+
+➡️ **Probeer de File Organizer GPT direct:**  
+[https://chatgpt.com/g/g-6831bc2bcfd08191867ae093ab9f6de3-file-organizer](https://chatgpt.com/g/g-6831bc2bcfd08191867ae093ab9f6de3-file-organizer)
+
+> **Let op:**  
+> De gratis versie van ChatGPT staat minder berichten toe per dag en je kunt ook minder (grote) bestanden uploaden.  
+> Voor de beste gebruikerservaring, meer uploads en langere gesprekken wordt **ChatGPT Plus** aanbevolen.
+
+> **Preview:**  
+> Er komt binnenkort een nieuwe versie van deze tool, met uitgebreidere bestandsbeheeropties en meer integraties!
 ## 💡 Tips
 
 *   Pas `map_structuur.txt` aan om de structuur perfect op jouw situatie af te stemmen.
