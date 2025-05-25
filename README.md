@@ -2,6 +2,9 @@
 
 Deze tool creëert automatisch een overzichtelijke en configureerbare mappenstructuur voor **persoonlijke administratie**. Het helpt je om digitale documenten georganiseerd te bewaren, gericht op particulieren. De structuur wordt gedefinieerd in een `map_structuur.txt` bestand, waardoor je deze eenvoudig kunt aanpassen aan je eigen behoeften.
 
+![Demonstratie Persoonlijke Mappen Generator](https://github.com/RemseyMailjard/PersoonlijkeMappenGenerator/raw/main/PersoonlijkeMappenStructuurGenerator.gif)
+
+
 **In deze repository vind je:**
 *   Een direct bruikbare **.EXE versie** (aanbevolen voor de meeste gebruikers).
 *   De originele **.BAT script versie** voor degenen die de code willen inzien of aanpassen.
