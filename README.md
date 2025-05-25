@@ -72,20 +72,9 @@ Dit biedt een geavanceerde oplossing voor het daadwerkelijk organiseren van de *
 ➡️ **Download de nieuwste versie direct: [AIFileOrganizerLinkedIn.zip](https://github.com/RemseyMailjard/AI-FileOrganizer2/raw/nieuwStructuur/AIFileOrganizerLinkedIn.zip)**
 *(Let op: de `.zip` link downloadt direct het bestand van de `nieuwStructuur` branch).*
 
-## 📷 Screenshot (Voorbeeld van de standaardstructuur)
-
-> Voeg hier een afbeelding toe van (een deel van) de aangemaakte mappenstructuur voor visuele duidelijkheid. Als je de .GIF in de repo hebt, kun je die hier direct linken:
-> `![Voorbeeld Mappenstructuur](PersoonlijkeMappenStructuurGenerator.gif)`
-
-## 📌 Voor wie is dit bedoeld?
-
-*   Iedereen die zijn/haar digitale documenten en administratie overzichtelijk wil organiseren.
-*   Personen die een startpunt zoeken voor een goede mappenopzet voor thuisadministratie.
-*   Trainers en coaches die digitale vaardigheden aanleren en een praktisch voorbeeld willen geven.
-
 ## 📂 Alternatief: AI File Organizer (GPT)
 
-Naast het batchscript heb ik ook een **File Organizer GPT** ontwikkeld.  
+Naast de tool en descript heb ik ook een **File Organizer GPT** ontwikkeld.  
 Met deze slimme AI-assistent organiseer je via een interactieve chat eenvoudig je persoonlijke mappenstructuur, geheel op maat en zonder technische kennis.
 
 ➡️ **Probeer de File Organizer GPT direct:**  
@@ -97,7 +86,24 @@ Met deze slimme AI-assistent organiseer je via een interactieve chat eenvoudig j
 
 > **Preview:**  
 > Er komt binnenkort een nieuwe versie van deze tool, met uitgebreidere bestandsbeheeropties en meer integraties!
-## 💡 Tips
+>
+> 
+
+## 📷 Screenshot (Voorbeeld van de standaardstructuur)
+
+> Voeg hier een afbeelding toe van (een deel van) de aangemaakte mappenstructuur voor visuele duidelijkheid. Als je de .GIF in de repo hebt, kun je die hier direct linken:
+> `![Voorbeeld Mappenstructuur](PersoonlijkeMappenStructuurGenerator.gif)`
+
+## 📌 Voor wie is dit bedoeld?
+
+*   Iedereen die zijn/haar digitale documenten en administratie overzichtelijk wil organiseren.
+*   Personen die een startpunt zoeken voor een goede mappenopzet voor thuisadministratie.
+*   Trainers en coaches die digitale vaardigheden aanleren en een praktisch voorbeeld willen geven.
+
+## persoonlijke mappenstructuur, geheel op maat en zonder technische kennis.
+
+> **gesprekken wordt **ChatGPT Plus** aanbevolen.
+
 
 *   Pas `map_structuur.txt` aan om de structuur perfect op jouw situatie af te stemmen.
 *   Bewaar de tool en `map_structuur.txt` op een handige plek voor jaarlijks gebruik.
