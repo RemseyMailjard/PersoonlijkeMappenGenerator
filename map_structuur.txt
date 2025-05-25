@@ -7,7 +7,7 @@
 # - Gebruik !TARGET_YEAR! voor het door de gebruiker opgegeven (of huidige) jaar.
 # - Gebruik !PREVIOUS_YEAR! voor het jaar vóór !TARGET_YEAR! (vooral voor archief).
 # - Regels die beginnen met # of rem worden genegeerd.
-# - Lege regels worden genegeerd.
+# - Lege regels en regels met alleen spaties worden genegeerd.
 # ---------------------------------------------------------------------------------
 
 # --- 1. Financiën ---
@@ -228,3 +228,9 @@
 rem Voorbeeld voor nog oudere archieven, handmatig toevoegen indien nodig:
 rem 99. Archief/!PREVIOUS_YEAR!-1
 rem 99. Archief/!PREVIOUS_YEAR!-2
+
+# Voorbeeld van een lege regel die genegeerd wordt:
+
+# Voorbeeld van een regel met alleen spaties die genegeerd wordt:
+   
+rem Nog een voorbeeld van een rem commentaarregel.

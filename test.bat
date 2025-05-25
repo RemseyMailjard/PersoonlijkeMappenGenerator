@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 rem ================================================================================
 rem  PersoonlijkeMappenStructuurGenerator.bat
-rem  Versie: 1.7.0 (Hybride: Standaard + Optioneel via map_structuur.txt)
+rem  Versie: 1.7.1 (Stabiliteitsverbeteringen in externe structuurverwerking)
 rem  Maakt een persoonlijke mappenstructuur aan.
 rem  Gebruikt map_structuur.txt indien aanwezig, anders een standaard ingebouwde structuur.
 rem  Gemaakt door Remsey Mailjard (https://nl.linkedin.com/in/remseymailjard)
@@ -18,7 +18,7 @@ echo ===============================
 echo.
 
 :: Initialisatie
-set "SCRIPT_VERSION=1.7.0"
+set "SCRIPT_VERSION=1.7.1"
 set "LOGFILE=%TEMP%\PersoonlijkeMappenStructuurGenerator_log.txt"
 set "MAP_DEFINITION_FILE=%~dp0map_structuur.txt"
 set "SCRIPT_SUCCESSFUL=true"
@@ -124,46 +124,55 @@ if not exist "!ROOT!" (
 :: KIES WELKE STRUCTUUR TE GEBRUIKEN
 if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :logMessage "Verwerken van mappenstructuur uit !MAP_DEFINITION_FILE!..."
-    for /f "usebackq tokens=*" %%L in ("!MAP_DEFINITION_FILE!") do (
+    for /f "usebackq delims=" %%L in ("!MAP_DEFINITION_FILE!") do (
         set "LINE=%%L"
         set "PROCESSED_LINE="
 
-        rem Verwijder eventuele CR aan het einde van de regel
-        for /f "tokens=*" %%C in ("!LINE!") do set "LINE=%%C"
+        rem Verwijder eventuele CR aan het einde van de regel (robuuster)
+        for /f "delims=" %%C in ("!LINE!") do set "LINE=%%C"
+        
+        rem Trim eventuele leidende/volgende spaties van de gelezen regel
+        call :trim LINE
 
-        rem Skip commentaarregels en lege regels
-        if defined LINE (
-            set "FIRST_CHAR=!LINE:~0,1!"
-            set "FIRST_THREE_CHARS_LOWER="
-            if "!LINE:~2,1!" NEQ "" (
-                call :toLower SCRIPT_FIRST_THREE_CHARS_TEMP "!LINE:~0,3!"
-                set "FIRST_THREE_CHARS_LOWER=!SCRIPT_FIRST_THREE_CHARS_TEMP!"
-            )
+        rem Skip lege regels (na trimmen)
+        if not defined LINE (goto :continueLoop)
+        if "!LINE!"=="" (goto :continueLoop)
 
-            if "!FIRST_CHAR!"=="#" (goto :continueLoop)
-            if "!FIRST_THREE_CHARS_LOWER!"=="rem" (goto :continueLoop)
+        rem Skip commentaarregels (#)
+        set "FIRST_CHAR=!LINE:~0,1!"
+        if "!FIRST_CHAR!"=="#" (goto :continueLoop)
 
-            rem Vervang placeholders
-            set "PROCESSED_LINE=!LINE:!TARGET_YEAR!=%TARGET_YEAR%!"
-            set "PROCESSED_LINE=!PROCESSED_LINE:!PREVIOUS_YEAR!=%PREVIOUS_YEAR%!"
+        rem Skip commentaarregels (rem - case insensitief)
+        if /i "!LINE:~0,3!"=="rem" (
+            if "!LINE:~3,1!"=="" (goto :continueLoop) rem Alleen "rem"
+            if "!LINE:~3,1!"==" " (goto :continueLoop) rem "rem " gevolgd door spatie
+        )
 
-            rem Vervang forward slashes met backslashes voor Windows paden
-            set "PROCESSED_LINE=!PROCESSED_LINE:/=\!"
+        rem Vervang placeholders
+        set "PROCESSED_LINE=!LINE:!TARGET_YEAR!=%TARGET_YEAR%!"
+        set "PROCESSED_LINE=!PROCESSED_LINE:!PREVIOUS_YEAR!=%PREVIOUS_YEAR%!"
 
-            rem Verwijder eventuele leidende of volgende backslashes
+        rem Vervang forward slashes met backslashes voor Windows paden
+        set "PROCESSED_LINE=!PROCESSED_LINE:/=\!"
+
+        rem Verwijder eventuele leidende of volgende backslashes als de regel leeg was na placeholder vervanging
+        if defined PROCESSED_LINE (
+            if "!PROCESSED_LINE:~0,1!"=="\" set "PROCESSED_LINE=!PROCESSED_LINE:~1!"
             if defined PROCESSED_LINE (
-                if "!PROCESSED_LINE:~0,1!"=="\" set "PROCESSED_LINE=!PROCESSED_LINE:~1!"
-                if defined PROCESSED_LINE if "!PROCESSED_LINE:~-1!"=="\" set "PROCESSED_LINE=!PROCESSED_LINE:~0,-1!"
+                 if "!PROCESSED_LINE:~-1!"=="\" set "PROCESSED_LINE=!PROCESSED_LINE:~0,-1!"
             )
-            
-            rem Alleen doorgaan als PROCESSED_LINE niet leeg is
-            if defined PROCESSED_LINE (
+        )
+        
+        rem Alleen doorgaan als PROCESSED_LINE niet leeg is na alle verwerking
+        if defined PROCESSED_LINE (
+            if not "!PROCESSED_LINE!"=="" (
                 set "FULL_PATH=!ROOT!\!PROCESSED_LINE!"
                 call :createSingleDir "!FULL_PATH!"
             )
         )
         :continueLoop
     )
+    call :logMessage "Verwerking van !MAP_DEFINITION_FILE! voltooid."
 ) else (
     call :logMessage "Gebruik van standaard ingebouwde mappenstructuur..."
     :: ---------- 1. Financiën --------------------------------------
@@ -287,6 +296,7 @@ if "!USE_EXTERNAL_MAP_FILE!"=="true" (
     call :createSingleDir "!ROOT!\99. Archief"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!"
     call :createSingleDir "!ROOT!\99. Archief\!PREVIOUS_YEAR!\Oude projecten"
+    call :logMessage "Standaard ingebouwde mappenstructuur voltooid."
 )
 
 :EndScriptProcessing
@@ -347,4 +357,22 @@ set "%1=%~2"
 for %%C in ("a=A" "b=B" "c=C" "d=D" "e=E" "f=F" "g=G" "h=H" "i=I" "j=J" "k=K" "l=L" "m=M" "n=N" "o=O" "p=P" "q=Q" "r=R" "s=S" "t=T" "u=U" "v=V" "w=W" "x=X" "y=Y" "z=Z") do (
     call set "%1=%%%1:%%~C%%"
 )
+goto :eof
+
+:trim
+rem Subroutine om leidende en volgende spaties van een variabele te verwijderen
+rem Gebruik: call :trim VARIABELENAAM
+setlocal
+set "value=!%1!"
+:trimLoopLead
+if defined value if "%value:~0,1%"==" " (
+    set "value=%value:~1%"
+    goto trimLoopLead
+)
+:trimLoopTrail
+if defined value if "%value:~-1%"==" " (
+    set "value=%value:~0,-1%"
+    goto trimLoopTrail
+)
+endlocal & set "%1=%value%"
 goto :eof
