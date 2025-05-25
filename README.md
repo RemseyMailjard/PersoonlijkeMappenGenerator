@@ -12,8 +12,10 @@ Deze tool creëert automatisch een overzichtelijke en configureerbare mappenstru
 ## 📁 Wat doet deze tool?
 
 *   Vraagt naar een **hoofdlocatie** (standaard `Desktop\Persoonlijke Administratie`) en een **doeljaar**.
-*   Leest de gewenste mappenstructuur uit het meegeleverde `map_structuur.txt` bestand.
-*   Creëert de mappen, waarbij placeholders zoals `!TARGET_YEAR!` en `!PREVIOUS_YEAR!` worden vervangen.
+*   Detecteert of `map_structuur.txt` aanwezig is:
+    *   **Indien aanwezig:** Leest de mappenstructuur uit dit bestand. Placeholders zoals `!TARGET_YEAR!` en `!PREVIOUS_YEAR!` worden vervangen.
+    *   **Indien niet aanwezig:** Gebruikt een standaard, uitgebreide ingebouwde mappenstructuur (gedefinieerd in het script/de .exe zelf).
+*   Creëert de gekozen mappenstructuur.
 *   Genereert een uitgebreide set aan thematische mappen, bijvoorbeeld voor:
     *   Financiën
     *   Belastingen
@@ -26,13 +28,17 @@ Deze tool creëert automatisch een overzichtelijke en configureerbare mappenstru
 
 ## ▶️ Gebruik (.EXE Versie - Aanbevolen)
 
-1.  Download `PersoonlijkeMappenGenerator.exe` en `map_structuur.txt` uit de [Releases sectie](https://github.com/GEBRUIKERSNAAM/PersoonlijkeMappenGenerator/releases) (of de hoofdmap van deze repository).
-2.  **Plaats beide bestanden (`.exe` en `.txt`) in dezelfde map.**
-3.  Dubbelklik op `PersoonlijkeMappenGenerator.exe`.
-4.  Volg de instructies op het scherm om de locatie en het jaartal te kiezen.
-5.  De mappenstructuur wordt aangemaakt volgens de definities in `map_structuur.txt`.
+1.  Download `PersoonlijkeMappenGenerator.exe` uit de [Releases sectie](https://github.com/GEBRUIKERSNAAM/PersoonlijkeMappenGenerator/releases) (of de hoofdmap van deze repository).
+2.  Dubbelklik op `PersoonlijkeMappenGenerator.exe`.
+3.  Volg de instructies op het scherm om de locatie en het jaartal te kiezen. De standaard ingebouwde structuur wordt nu gebruikt.
 
-> ℹ️ De .EXE is gemaakt voor Windows en vereist geen installatie. Zorg ervoor dat `map_structuur.txt` aanwezig is in dezelfde map als de .EXE.
+**Optioneel: Eigen structuur gebruiken:**
+1.  Download (of maak) ook een `map_structuur.txt` bestand. Een voorbeeldbestand (`map_structuur_voorbeeld.txt`) is beschikbaar in deze repository.
+2.  Hernoem het voorbeeldbestand of maak je eigen bestand en noem het `map_structuur.txt`.
+3.  **Plaats `PersoonlijkeMappenGenerator.exe` en `map_structuur.txt` in dezelfde map.**
+4.  Start `PersoonlijkeMappenGenerator.exe`. De tool zal nu automatisch `map_structuur.txt` gebruiken.
+
+> ℹ️ De .EXE is gemaakt voor Windows en vereist geen installatie.
 
 ## 🔧 Structuur Aanpassen (`map_structuur.txt`)
 
@@ -40,18 +46,36 @@ Je kunt de mappenstructuur volledig naar wens aanpassen door het `map_structuur.
 *   Elke regel definieert een map (relatief aan de hoofdmap).
 *   Gebruik `/` als padscheidingsteken.
 *   Gebruik `!TARGET_YEAR!` voor het gekozen jaartal en `!PREVIOUS_YEAR!` voor het jaar daarvoor.
-*   Regels beginnend met `#` of `rem` worden genegeerd.
+*   Regels beginnend met `#` of `rem`, en lege regels, worden genegeerd.
 
 ## 🧑‍💻 Gebruik (.BAT Script Versie - Voor gevorderden)
 
-1.  Download `PersoonlijkeMappenStructuurGenerator.bat` en `map_structuur.txt`.
-2.  **Plaats beide bestanden in dezelfde map.**
-3.  Dubbelklik op het `.bat` bestand of voer het uit via de command prompt.
-4.  Volg de instructies.
+1.  Download `PersoonlijkeMappenStructuurGenerator.bat` (en eventueel `map_structuur_voorbeeld.txt` als basis).
+2.  Indien je een eigen structuur wilt: maak/bewerk `map_structuur.txt`.
+3.  **Plaats het `.bat` bestand (en `map_structuur.txt` indien gebruikt) in dezelfde map.**
+4.  Dubbelklik op het `.bat` bestand of voer het uit via de command prompt.
+5.  Volg de instructies.
+
+## ✨ Geavanceerde Bestandsorganisatie met AI
+
+Als je op zoek bent naar een nog krachtigere manier om niet alleen mappenstructuren aan te maken, maar ook je bestaande bestanden **automatisch te laten sorteren en hernoemen met behulp van Kunstmatige Intelligentie**, bekijk dan mijn andere project: **AI File Organizer**.
+
+De **AI File Organizer** is een Windows-applicatie die:
+*   Bestandsinhoud analyseert (PDF, DOCX, TXT, MD).
+*   Bestanden automatisch classificeert en verplaatst naar relevante categorieën.
+*   AI-gegenereerde suggesties doet voor submappen en bestandsnamen.
+*   Ondersteuning biedt voor AI-providers zoals Google Gemini, OpenAI en Azure OpenAI.
+
+Dit biedt een geavanceerde oplossing voor het daadwerkelijk organiseren van de *inhoud* van je digitale documenten.
+
+➡️ **Bekijk de [AI File Organizer op GitHub](https://github.com/RemseyMailjard/AI-FileOrganizer2/tree/nieuwStructuur)**
+➡️ **Download de nieuwste versie direct: [AIFileOrganizerLinkedIn.zip](https://github.com/RemseyMailjard/AI-FileOrganizer2/raw/nieuwStructuur/AIFileOrganizerLinkedIn.zip)**
+*(Let op: de `.zip` link downloadt direct het bestand van de `nieuwStructuur` branch).*
 
 ## 📷 Screenshot (Voorbeeld van de standaardstructuur)
 
-> Voeg hier een afbeelding toe van (een deel van) de aangemaakte mappenstructuur voor visuele duidelijkheid.
+> Voeg hier een afbeelding toe van (een deel van) de aangemaakte mappenstructuur voor visuele duidelijkheid. Als je de .GIF in de repo hebt, kun je die hier direct linken:
+> `![Voorbeeld Mappenstructuur](PersoonlijkeMappenStructuurGenerator.gif)`
 
 ## 📌 Voor wie is dit bedoeld?
 
@@ -66,7 +90,7 @@ Je kunt de mappenstructuur volledig naar wens aanpassen door het `map_structuur.
 
 ## 📜 Licentie
 
-Dit project is beschikbaar onder de [MIT License](LICENSE).
+Dit project is beschikbaar onder de [MIT License](LICENSE). *(Zorg ervoor dat je een LICENSE bestand toevoegt aan je repository).*
 
 ## ✍️ Auteur
 
